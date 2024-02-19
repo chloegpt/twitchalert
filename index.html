@@ -14,7 +14,9 @@
             <p id="follower-message">Username is now following!</p>
         </div>
     </div>
+
     <div id="twitch-embed"></div>
+
     <!-- Include Twitch Embed Script for the Twitch API -->
     <script src="https://embed.twitch.tv/embed/v1.js"></script>
     <script>
@@ -58,15 +60,15 @@
         // Function to initialize Twitch Embed with a delay
         function initializeTwitchEmbed() {
             setTimeout(() => {
-                new Twitch.Embed("twitch-embed", {
+                const twitchPlayer = new Twitch.Embed("twitch-embed", {
                     width: 1,
                     height: 1,
                     channel: "chloegpt",
                     parent: ["chloegpt.github.io"]
                 });
 
-                // Listen for follow events
-                Twitch.Embed.onFollow(handleNewFollower);
+                // Listen for follow events using addEventListener
+                twitchPlayer.addEventListener(Twitch.Embed.EventType.FOLLOW, handleNewFollower);
             }, 1000); // Delay in milliseconds
         }
 
