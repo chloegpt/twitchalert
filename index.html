@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Custom Alert Overlay</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="alert-container">
+        <div class="alert-content">
+            <h2 id="follower-name">New Follower Alert</h2>
+            <p id="follower-message">Username is now following!</p>
+        </div>
+    </div>
+
+    <!-- Include Twitch Embed Script for the Twitch API -->
+    <script src="https://embed.twitch.tv/embed/v1.js"></script>
+    <script>
+        // Queue to store follower events
+        const followerQueue = [];
+
+        // Function to update follower information
+        function updateFollowerInfo(username) {
+            document.getElementById('follower-name').innerText = username;
+            document.getElementById('follower-message').innerText = `${username} is now following!`;
+
+            // Show the alert
+            document.querySelector('.alert-container').style.display = 'flex';
+
+            // Hide the alert after 3 seconds
+            setTimeout(() => {
+                document.querySelector('.alert-container').style.display = 'none';
+                
+                // Check if there are more followers in the queue
+                if (followerQueue.length > 0) {
+                    const nextFollower = followerQueue.shift();
+                    updateFollowerInfo(nextFollower);
+                }
+            }, 3000);
+        }
+
+        // Function to handle new follower events
+        function handleNewFollower(followedChannel) {
+            // Extract the follower's username
+            const followerUsername = followedChannel.userName;
+
+            // If no alert is currently displayed, show the alert immediately
+            if (document.querySelector('.alert-container').style.display === 'none') {
+                updateFollowerInfo(followerUsername);
+            } else {
+                // If an alert is already displayed, add the follower event to the queue
+                followerQueue.push(followerUsername);
+            }
+        }
+
+        // Function to initialize Twitch Embed and listen for events
+        function initializeTwitchEmbed() {
+            new Twitch.Embed("twitch-embed", {
+                width: 1,
+                height: 1,
+                channel: "chloegpt",
+                parent: ["chloegpt.github.io"]
+            });
+
+            // Listen for follow events
+            Twitch.Embed.onFollow(handleNewFollower);
+        }
+
+        // Initialize Twitch Embed when the page loads
+        window.addEventListener('DOMContentLoaded', initializeTwitchEmbed);
+    </script>
+</body>
+</html>
